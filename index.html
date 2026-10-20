@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10110f">
+  <meta name="description" content="عزم AI - مساعدك الذكي باللغة العربية">
+  <title>عزم AI — مساعدك الذكي</title>
+  <style>
+    :root {
+      --bg: #10110f;
+      --panel: #171915;
+      --panel2: #20221d;
+      --border: #30332b;
+      --text: #f4f5ef;
+      --muted: #999d90;
+      --green: #c8f36b;
+      --green-dark: #1b2510;
+      --danger: #ffaaa0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Tahoma, Arial, sans-serif;
+      min-height: 100dvh;
+    }
+    button, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--green);
+      outline-offset: 3px;
+    }
+    .app {
+      width: 100%;
+      max-width: 1000px;
+      height: 100dvh;
+      min-height: 500px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      min-height: 72px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(16,17,15,.96);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+    .logo {
+      width: 43px;
+      height: 43px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      background: var(--green);
+      color: #17200d;
+      border-radius: 14px;
+      font-size: 25px;
+      font-weight: 900;
+    }
+    .brand-name { font-size: 20px; font-weight: 800; }
+    .brand-name span { color: var(--green); }
+    .subtitle { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .new-chat {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 13px;
+      background: var(--panel);
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .new-chat:hover { border-color: var(--green); }
+    main {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 0 20px;
+    }
+    #messages {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 24px 0;
+      scroll-behavior: smooth;
+    }
+    .welcome {
+      width: 100%;
+      max-width: 620px;
+      margin: auto;
+      padding: 26px 0;
+      text-align: center;
+    }
+    .welcome-mark {
+      width: 66px;
+      height: 66px;
+      margin: 0 auto 20px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #444c32;
+      border-radius: 23px;
+      color: var(--green);
+      font-size: 34px;
+      background: #1a2014;
+    }
+    h1 { margin: 0 0 12px; font-size: clamp(25px, 5vw, 36px); }
+    .welcome p {
+      color: var(--muted);
+      line-height: 1.9;
+      margin: 0;
+      font-size: 15px;
+    }
+    .suggestions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 11px;
+      margin-top: 30px;
+      text-align: right;
+    }
+    .suggestion {
+      padding: 16px;
+      min-height: 88px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 16px;
+      text-align: right;
+      line-height: 1.8;
+      transition: border-color .15s, background .15s;
+    }
+    .suggestion:hover {
+      border-color: #748d48;
+      background: #1d2118;
+    }
+    .suggestion strong { display: block; font-size: 14px; }
+    .suggestion span { display: block; color: var(--muted); font-size: 12px; }
+    .message {
+      max-width: min(85%, 700px);
+      padding: 13px 16px;
+      border-radius: 17px;
+      line-height: 1.95;
+      font-size: 15px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .user {
+      align-self: flex-start;
+      background: var(--green);
+      color: #17200d;
+      border-bottom-left-radius: 5px;
+    }
+    .assistant {
+      align-self: flex-end;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-bottom-right-radius: 5px;
+    }
+    .assistant.error { color: var(--danger); }
+    .assistant a { color: var(--green); }
+    .composer {
+      padding: 12px 0 max(15px, env(safe-area-inset-bottom));
+      background: var(--bg);
+    }
+    .input-box {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      padding: 9px;
+      border: 1px solid #42443a;
+      border-radius: 19px;
+      background: var(--panel);
+      transition: border-color .15s;
+    }
+    .input-box:focus-within { border-color: #839e4e; }
+    textarea {
+      display: block;
+      flex: 1;
+      min-width: 0;
+      min-height: 43px;
+      max-height: 160px;
+      resize: none;
+      padding: 11px 9px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    textarea::placeholder { color: #8d9184; }
+    .send {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      border: 0;
+      border-radius: 14px;
+      background: var(--green);
+      color: #18200e;
+      font-size: 24px;
+      font-weight: 800;
+    }
+    .send:disabled { opacity: .5; cursor: wait; }
+    .footer-note {
+      text-align: center;
+      color: #777b70;
+      font-size: 11px;
+      padding-top: 10px;
+    }
+    .typing { color: var(--muted); }
+    .typing::after { content: " "; animation: blink 1s infinite; }
+    @keyframes blink { 50% { opacity: .25; } }
+    @media (max-width: 520px) {
+      header { min-height: 64px; padding: 10px 13px; }
+      main { padding: 0 13px; }
+      #messages { padding: 18px 0; }
+      .brand-name { font-size: 18px; }
+      .logo { width: 39px; height: 39px; }
+      .new-chat { padding: 9px 10px; font-size: 12px; }
+      .suggestions { grid-template-columns: 1fr; gap: 8px; margin-top: 23px; }
+      .suggestion { min-height: auto; padding: 12px 14px; }
+      .message { max-width: 94%; font-size: 14px; }
+      .welcome { padding: 15px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">ع</div>
+        <div>
+          <div class="brand-name">عزم <span>AI</span></div>
+          <div class="subtitle">مساعدك الذكي باللغة العربية</div>
+        </div>
+      </div>
+      <button class="new-chat" id="newChat" type="button">＋ محادثة جديدة</button>
+    </header>
+    <main>
+      <section id="messages" aria-live="polite">
+        <div class="welcome" id="welcome">
+          <div class="welcome-mark">✳</div>
+          <h1>حيّاك في عزم AI</h1>
+          <p>فكّر، اسأل، تعلّم، وأنجز.<br>أنا هنا لمساعدتك، وش ودّك نبدأ فيه؟</p>
+          <div class="suggestions">
+            <button class="suggestion" type="button" data-prompt="اقترح لي مشروعًا أقدر أبدأه بميزانية بسيطة">
+              <strong>💡 أفكار ومشاريع</strong>
+              <span>خطوات عملية للبدء</span>
+            </button>
+            <button class="suggestion" type="button" data-prompt="ساعدني في كتابة نص عربي احترافي">
+              <strong>✍️ الكتابة والإبداع</strong>
+              <span>اكتب وصحّح وطوّر أفكارك</span>
+            </button>
+            <button class="suggestion" type="button" data-prompt="اشرح لي موضوعًا صعبًا بأسلوب بسيط">
+              <strong>📚 تعلّم واكتشف</strong>
+              <span>شرح واضح خطوة بخطوة</span>
+            </button>
+            <button class="suggestion" type="button" data-prompt="ساعدني في بناء موقع باستخدام HTML وCSS وJavaScript">
+              <strong>💻 البرمجة والتقنية</strong>
+              <span>حل المشكلات وتطوير المشاريع</span>
+            </button>
+          </div>
+        </div>
+      </section>
+      <div class="composer">
+        <div class="input-box">
+          <textarea id="prompt" rows="1" maxlength="4000"
+            placeholder="اكتب رسالتك لعزم AI..."
+            aria-label="رسالتك"></textarea>
+          <button class="send" id="send" type="button" aria-label="إرسال الرسالة">↑</button>
+        </div>
+        <div class="footer-note">عزم AI · قد تحتاج الإجابات إلى التحقق من دقتها</div>
+      </div>
+    </main>
+  </div>
+  <script>
+    // عنوان وسيط Cloudflare الخاص بعزم AI
+    const API_URL = "https://broad-frog-3318.r46syyfygc.workers.dev/";
+    const messages = document.getElementById("messages");
+    const input = document.getElementById("prompt");
+    const sendButton = document.getElementById("send");
+    const newChatButton = document.getElementById("newChat");
+    let history = [];
+    let welcomeHTML = "";
+    const welcomeElement = document.getElementById("welcome");
+    welcomeHTML = welcomeElement.outerHTML;
+    function addMessage(text, type) {
+      const element = document.createElement("div");
+      element.className = "message " + type;
+      element.textContent = text;
+      messages.appendChild(element);
+      messages.scrollTop = messages.scrollHeight;
+      return element;
+    }
+    function showWelcome() {
+      messages.innerHTML = welcomeHTML;
+      messages.querySelectorAll("[data-prompt]").forEach(button => {
+        button.addEventListener("click", () => {
+          sendMessage(button.dataset.prompt);
+        });
+      });
+    }
+    async function sendMessage(value) {
+      const text = (value || input.value).trim();
+      if (!text || sendButton.disabled) return;
+      const currentHistory = history.slice(-10);
+      messages.querySelector(".welcome")?.remove();
+      addMessage(text, "user");
+      input.value = "";
+      input.style.height = "43px";
+      sendButton.disabled = true;
+      input.disabled = true;
+      const loading = addMessage("عزم يفكر...", "assistant typing");
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: text,
+            history: currentHistory
+          })
+        });
+        let data;
+        try {
+          data = await response.json();
+        } catch {
+          throw new Error("وصل رد غير مفهوم من الخادم.");
+        }
+        if (!response.ok) {
+          throw new Error(data.error || "تعذر الاتصال بالخدمة.");
+        }
+        if (!data.answer || typeof data.answer !== "string") {
+          throw new Error(data.error || "لم يصل رد من الذكاء الاصطناعي.");
+        }
+        loading.classList.remove("typing");
+        loading.textContent = data.answer;
+        history.push(
+          { role: "user", text: text },
+          { role: "model", text: data.answer }
+        );
+        history = history.slice(-20);
+      } catch (error) {
+        loading.classList.remove("typing");
+        loading.classList.add("error");
+        if (error instanceof TypeError) {
+          loading.textContent =
+            "تعذر الاتصال بالخادم. تأكد من نشر Worker وإعداد صلاحيات الاتصال (CORS)، ثم حاول مرة ثانية.";
+        } else {
+          loading.textContent =
+            "ما قدرت أجيب الإجابة: " + error.message;
+        }
+        console.error("Azm AI error:", error);
+      } finally {
+        sendButton.disabled = false;
+        input.disabled = false;
+        input.focus();
+        messages.scrollTop = messages.scrollHeight;
+      }
+    }
+    sendButton.addEventListener("click", () => sendMessage());
+    input.addEventListener("keydown", event => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+    input.addEventListener("input", () => {
+      input.style.height = "43px";
+      input.style.height = Math.min(input.scrollHeight, 160) + "px";
+    });
+    newChatButton.addEventListener("click", () => {
+      history = [];
+      input.value = "";
+      input.style.height = "43px";
+      showWelcome();
+      input.focus();
+    });
+    showWelcome();
+  </script>
+</body>
+</html>
